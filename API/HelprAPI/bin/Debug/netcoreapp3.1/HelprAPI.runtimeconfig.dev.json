@@ -1,0 +1,8 @@
+{
+  "runtimeOptions": {
+    "additionalProbingPaths": [
+      "C:\\Users\\juneb\\.dotnet\\store\\|arch|\\|tfm|",
+      "C:\\Users\\juneb\\.nuget\\packages"
+    ]
+  }
+}
