@@ -33,10 +33,6 @@ namespace HelprAPI.Controllers
         public async Task<IActionResult> PostUser([FromBody] UserModel body)
         {
             await Db.Connection.OpenAsync();
-            
-            //set user id to be current number of users + 1
-            int uCount = await Query.NumUsers();
-            body.user_id = uCount + 1;
 
             //return 200 if user was successfully added, 404 if user already exists
             if (await Query.AddUser(body))

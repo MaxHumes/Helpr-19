@@ -20,7 +20,7 @@ namespace HelprAPI
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
-            string connStr = Configuration["ConnectionStrings:UsersDatabase"];
+            string connStr = Configuration["ConnectionStrings:DefaultConnection"];
 
             services.AddDbContext<UserContext>(options => options.UseMySQL(connStr));
             services.AddTransient<AppDb>(_ => new AppDb(connStr));
