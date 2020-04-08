@@ -1,10 +1,13 @@
-﻿using System.Threading.Tasks;
+﻿using System;
+using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using HelprAPI.Models;
+using HelprAPI.Utility;
+using System.Text;
 
 namespace HelprAPI.Controllers
 {    
-    [Route("api/")]
+    [Route("api/users")]
     [ApiController]
     public class UsersController : ControllerBase
     {
@@ -18,24 +21,30 @@ namespace HelprAPI.Controllers
             Query = new UserDbQuery(Db);
         }
 
-        // GET api/users
+        // GET api/users/list
         // returns list of all users in user database
-        [HttpGet("users")]
+        [HttpGet("list")]
         public async Task<IActionResult> GetUserList()
         {
             await Db.Connection.OpenAsync();
             var result = await Query.UserList();
             return new OkObjectResult(result);
         }
-        
-        //POST api/user
-        [HttpPost("user")]
-        public async Task<IActionResult> PostUser([FromBody] UserModel body)
-        {
-            await Db.Connection.OpenAsync();
 
+        //POST api/users/add
+        [HttpPost("add")]
+        public async Task<IActionResult> PostNewUser([FromBody] UserModel body)
+        {
+            //generate salt and add to user model
+            byte[] salt = Security.GetSalt();
+            body.salt = salt;
+           
+            //hash password with previously genereated salt and add to user model
+            body.password = Security.HashPassword(body.password, salt);
+
+            await Db.Connection.OpenAsync();
             //return 200 if user was successfully added, 404 if user already exists
-            if (await Query.AddUser(body))
+            if (await Query.AddUserLogin(body))
             {
                 return new OkResult();
             }

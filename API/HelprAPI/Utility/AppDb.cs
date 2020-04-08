@@ -9,7 +9,6 @@ namespace HelprAPI
 
         public AppDb(string connectionString)
         {
-            
             Connection = new MySqlConnection(connectionString);
         }
 
