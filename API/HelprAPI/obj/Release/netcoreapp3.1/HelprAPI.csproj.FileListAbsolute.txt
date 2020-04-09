@@ -154,3 +154,5 @@ C:\Users\juneb\OneDrive\Documents\GitHub\Helpr-19\API\HelprAPI\obj\Release\netco
 C:\Users\juneb\OneDrive\Documents\GitHub\Helpr-19\API\HelprAPI\obj\Release\netcoreapp3.1\HelprAPI.csproj.CopyComplete
 C:\Users\juneb\OneDrive\Documents\GitHub\Helpr-19\API\HelprAPI\obj\Release\netcoreapp3.1\HelprAPI.dll
 C:\Users\juneb\OneDrive\Documents\GitHub\Helpr-19\API\HelprAPI\obj\Release\netcoreapp3.1\HelprAPI.pdb
+C:\Users\juneb\OneDrive\Documents\GitHub\Helpr-19\API\HelprAPI\bin\Release\netcoreapp3.1\Microsoft.AspNetCore.Cryptography.Internal.dll
+C:\Users\juneb\OneDrive\Documents\GitHub\Helpr-19\API\HelprAPI\bin\Release\netcoreapp3.1\Microsoft.AspNetCore.Cryptography.KeyDerivation.dll

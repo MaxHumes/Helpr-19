@@ -4,7 +4,7 @@ using System.Data.Common;
 using System.Threading.Tasks;
 using HelprAPI.Models;
 using MySql.Data.MySqlClient;
-using HelprAPI.Utility;
+using System.Reflection;
 
 namespace HelprAPI
 {
@@ -77,6 +77,37 @@ namespace HelprAPI
             }
         }
 
+        //method which determines whether a field is already used in the users database
+        public async Task<bool> FieldTaken(string columnName, string value)
+        {
+            if(!validColumnName(columnName))
+            {
+                throw new ArgumentException();
+            }
+
+            //set database string based on columnName
+            string table = String.Equals(columnName, "email") || String.Equals(columnName, "password") ? "login_info" : "personal_info";
+
+            using(var cmd = Db.Connection.CreateCommand())
+            {
+                //create SQL command to find rows where value is in columnName
+                cmd.CommandText = $"SELECT * FROM {table} WHERE {columnName} = @value";
+                cmd.Parameters.AddWithValue("@value", value);
+
+                using(var reader = await cmd.ExecuteReaderAsync())
+                {
+                    //if select statement read any users, return that field is taken
+                    if(reader.Read())
+                    {
+                        return true;
+                    }
+                }
+            }
+
+            //otherwise field is not taken
+            return false;
+        }
+
         //read user_id from database for user with email = email, returns -1 if no such user is found
         private async Task<int> getUserId(string email)
         {
@@ -101,6 +132,22 @@ namespace HelprAPI
                     }
                 }
             }
+        }
+
+        //determine whether col is a valid column name for SQL query
+        private bool validColumnName(string col)
+        {
+            //get properties from UserModel
+            PropertyInfo[] properties = typeof(UserModel).GetProperties();
+            foreach(PropertyInfo p in properties)
+            {
+                //check whether col equals property name
+                if(String.Equals(col, p.Name))
+                {
+                    return true;
+                }
+            }
+            return false;
         }
 
         //read all rows of user_info and return list of UserModels
