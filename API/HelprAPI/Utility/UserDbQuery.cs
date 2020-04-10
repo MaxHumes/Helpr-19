@@ -3,13 +3,13 @@ using System.Threading.Tasks;
 using HelprAPI.Models;
 using MySql.Data.MySqlClient;
 using System.Reflection;
+using HelprAPI.Utility;
 
 namespace HelprAPI
 {
     public class UserDbQuery
     {
         private AppDb Db;
-
         public UserDbQuery(AppDb db)
         {
             Db = db;
@@ -20,6 +20,8 @@ namespace HelprAPI
         //get user as UserModel from database where email = email
         public async Task<UserModel> GetUser(string email)
         {
+            await Db.Connection.ChangeDataBaseAsync("users");
+
             using (var cmd = Db.Connection.CreateCommand())
             {
                 UserModel user = new UserModel();
@@ -71,9 +73,10 @@ namespace HelprAPI
         }
 
         //add user info given model to both login_info and personal_info
-        public async Task<bool> AddUserLogin(UserModel user)
+        public async Task<bool> AddUser(UserModel user)
         {
-            //connect to database
+            await Db.Connection.ChangeDataBaseAsync("users");
+
             using (var cmd = Db.Connection.CreateCommand())
             {
                 //return true if there are no errors in adding user to database, false otherwise
@@ -120,7 +123,9 @@ namespace HelprAPI
         //add user token to authorization_tokens table
         public async Task<bool> AddAuthorizationToken(int uid, string token)
         {
-            using(var cmd = Db.Connection.CreateCommand())
+            await Db.Connection.ChangeDataBaseAsync("users");
+
+            using (var cmd = Db.Connection.CreateCommand())
             {
                 //create SQL query to insert token as active token
                 cmd.CommandText = "INSERT INTO authorization_tokens (user_id, token)" +
@@ -138,29 +143,23 @@ namespace HelprAPI
             }
         }
 
-        //logout user using their authorization token
-        public async Task<bool> Logout(string token)
+        //method which determines whether a user is logged in by user_id
+        public async Task<bool> UserLoggedIn(int uid)
         {
-            using(var cmd = Db.Connection.CreateCommand())
-            {
-                cmd.CommandText = "SELECT * FROM authorization_tokens " +
-                    "WHERE token = @token";
-                cmd.Parameters.AddWithValue("@token", token);
+            await Db.Connection.ChangeDataBaseAsync("users");
 
-                //if the SQL query returns any rows, delete user and return true, return false otherwise
+            using (var cmd = Db.Connection.CreateCommand())
+            {
+                //create SQL query to find rows where user_id is uid
+                cmd.CommandText = "SELECT * FROM authorization_tokens WHERE user_id = @user_id";
+                cmd.Parameters.AddWithValue("@user_id", uid);
+
+                //if the SQL query returns any rows, return true, false otherwise
                 using (var reader = await cmd.ExecuteReaderAsync())
                 {
                     if (reader.Read())
                     {
-                        await reader.CloseAsync();
-                        
-                        //attempt to delete token and return true if token is deleted
-                        cmd.CommandText = "DELETE FROM authorization_tokens WHERE token = @token";
-                        if(await cmd.ExecuteNonQueryAsync() > 0)
-                        {
-                            return true;
-                        }
-                        return false;
+                        return true;
                     }
                     else
                     {
@@ -170,10 +169,43 @@ namespace HelprAPI
             }
         }
 
-        //method which determines whether a field is already used in the users database
+        //logout user using their authorization token
+        public async Task<bool> Logout(string token)
+        {
+            await Db.Connection.ChangeDataBaseAsync("users");
+
+            using (var cmd = Db.Connection.CreateCommand())
+            {
+                //get AuthorizationTokenModel from db and if it exists, delete is and return true
+                var authorizationQuery = new AuthorizationQuery(Db);
+                var authorizationToken = await authorizationQuery.GetTokenModel(token);
+                if (authorizationToken != null)
+                {
+                    //attempt to delete token and return true if token is deleted
+                    cmd.CommandText = "DELETE FROM authorization_tokens WHERE token = @token";
+                    cmd.Parameters.AddWithValue("@token", token);
+                    if (await cmd.ExecuteNonQueryAsync() > 0)
+                    {
+                        return true;
+                    }
+                    else
+                    {
+                        return false;
+                    }
+                }
+                else
+                {
+                    return false;
+                }
+            }
+        }
+
+        //method which determines whether a field is already used in login_info or personal_info
         public async Task<bool> FieldAlreadyExists(string columnName, string value)
         {
-            if(!validColumnName(columnName))
+            await Db.Connection.ChangeDataBaseAsync("users");
+
+            if (!validColumnName(columnName))
             {
                 throw new ArgumentException();
             }
@@ -199,30 +231,6 @@ namespace HelprAPI
 
             //otherwise field is not taken
             return false;
-        }
-
-        //method which determines whether a user is logged in by user_id
-        public async Task<bool> UserLoggedIn(int uid)
-        {
-            using(var cmd = Db.Connection.CreateCommand())
-            {
-                //create SQL query to find rows where user_id is uid
-                cmd.CommandText = "SELECT * FROM authorization_tokens WHERE user_id = @user_id";
-                cmd.Parameters.AddWithValue("@user_id", uid);
-
-                //if the SQL query returns any rows, return true, false otherwise
-                using(var reader = await cmd.ExecuteReaderAsync())
-                {
-                    if(reader.Read())
-                    {
-                        return true;
-                    }
-                    else
-                    {
-                        return false;
-                    }
-                }
-            }
         }
 
         //Private helper methods:

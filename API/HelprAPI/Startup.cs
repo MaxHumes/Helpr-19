@@ -22,7 +22,7 @@ namespace HelprAPI
         {
             string connectionString = Configuration["ConnectionStrings:DefaultConnection"];
 
-            services.AddDbContext<UserContext>(options => options.UseMySQL(connectionString));
+            services.AddDbContext<AppContext>(options => options.UseMySQL(connectionString));
             services.AddTransient<AppDb>(_ => new AppDb(connectionString));
             services.AddControllers();
         }
