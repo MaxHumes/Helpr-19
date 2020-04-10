@@ -155,4 +155,5 @@ C:\Users\juneb\OneDrive\Documents\GitHub\Helpr-19\API\HelprAPI\obj\Debug\netcore
 C:\Users\juneb\OneDrive\Documents\GitHub\Helpr-19\API\HelprAPI\obj\Debug\netcoreapp3.1\HelprAPI.pdb
 C:\Users\juneb\OneDrive\Documents\GitHub\Helpr-19\API\HelprAPI\bin\Debug\netcoreapp3.1\Microsoft.AspNetCore.Cryptography.Internal.dll
 C:\Users\juneb\OneDrive\Documents\GitHub\Helpr-19\API\HelprAPI\bin\Debug\netcoreapp3.1\Microsoft.AspNetCore.Cryptography.KeyDerivation.dll
+C:\Users\juneb\OneDrive\Documents\GitHub\Helpr-19\API\HelprAPI\bin\Debug\netcoreapp3.1\RandomStringUtils.dll
 C:\Users\juneb\OneDrive\Documents\GitHub\Helpr-19\API\HelprAPI\obj\Debug\netcoreapp3.1\HelprAPI.MvcApplicationPartsAssemblyInfo.cache

@@ -1,9 +1,9 @@
-﻿using System.Web;
+﻿using System;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using HelprAPI.Models;
 using HelprAPI.Utility;
-using System.Text;
+using RandomStringUtils;
 
 namespace HelprAPI.Controllers
 {
@@ -21,15 +21,7 @@ namespace HelprAPI.Controllers
             Query = new UserDbQuery(Db);
         }
 
-        // GET api/users/list
-        // returns list of all users in user database
-        [HttpGet("list")]
-        public async Task<IActionResult> GetUserList()
-        {
-            await Db.Connection.OpenAsync();
-            var result = await Query.UserList();
-            return new OkObjectResult(result);
-        }
+        //API Calls:
 
         //POST api/users/add
         [HttpPost("add")]
@@ -42,14 +34,16 @@ namespace HelprAPI.Controllers
             {
                 return new NotFoundObjectResult("Invalid email address");
             }
-            if(await Query.FieldTaken("email", body.email))
+            if(await Query.FieldAlreadyExists("email", body.email))
             {
                 return new NotFoundObjectResult("Email already taken");
             }
-            if(await Query.FieldTaken("username", body.username))
+            if(await Query.FieldAlreadyExists("username", body.username))
             {
                 return new NotFoundObjectResult("Username already taken");
             }
+
+            body.email = (body.email).ToLower();
 
             //generate salt and add to user model
             byte[] salt = Security.GetSalt();
@@ -68,6 +62,61 @@ namespace HelprAPI.Controllers
                 return new NotFoundObjectResult("Server Error");
             }
         }
+
+        //POST/api/users/login
+        [HttpPost ("login")]
+        public async Task<IActionResult> PostLogin([FromBody] UserModel body)
+        {
+            await Db.Connection.OpenAsync();
+
+            //get user from database with given email
+            UserModel user = await Query.GetUser(body.email.ToLower());
+
+            //return 404 code if user is already logged in
+            if(await Query.UserLoggedIn(user.user_id))
+            {
+                return new NotFoundObjectResult("User already logged in");
+            }
+
+            //return 404 code if user is not found
+            if (user == null)
+            {
+                return new NotFoundObjectResult("Email not found in database");
+            }
+
+            //return 404 code if password is incorrect
+            string password = Security.HashPassword(body.password, user.salt);
+            if(!await Query.FieldAlreadyExists(("password"), password))
+            {
+                return new NotFoundObjectResult("Password is incorrect");
+            }
+
+            //create login token and send the result to authorization_tokens in database
+            string token = user.user_id.ToString() + RandomStringUtils.RandomStringUtils.RandomAlphanumeric(32);
+            if(await Query.AddAuthorizationToken(user.user_id, token))
+            {
+                return new OkObjectResult(token);
+            }
+
+            return new NotFoundObjectResult("Error logging in user");
+        }
+
+        //POST /api/users/logout
+        [HttpPost ("logout")]
+        public async Task<IActionResult> PostLogout([FromBody] AuthorizationTokenModel token)
+        {
+            await Db.Connection.OpenAsync();
+
+            //return 200 if user is successfully logged out
+            if(await Query.Logout(token.token))
+            {
+                return new OkResult();
+            }
+            
+            return new NotFoundObjectResult("Unable to log user out");
+        }
+
+        //Private helper methods:
 
         private bool IsValidEmail(string email)
         {

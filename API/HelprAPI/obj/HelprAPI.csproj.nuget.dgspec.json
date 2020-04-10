@@ -67,6 +67,10 @@
             "MySql.Data.EntityFrameworkCore": {
               "target": "Package",
               "version": "[8.0.19, )"
+            },
+            "RandomStringUtils": {
+              "target": "Package",
+              "version": "[0.2.5732, )"
             }
           },
           "imports": [

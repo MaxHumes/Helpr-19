@@ -1,6 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Data.Common;
 using System.Threading.Tasks;
 using HelprAPI.Models;
 using MySql.Data.MySqlClient;
@@ -17,16 +15,58 @@ namespace HelprAPI
             Db = db;
         }
 
-        //query database to return everything from user_info table
-        public async Task<List<UserModel>> UserList()
+        //query methods:
+
+        //get user as UserModel from database where email = email
+        public async Task<UserModel> GetUser(string email)
         {
             using (var cmd = Db.Connection.CreateCommand())
             {
-                cmd.CommandText = "SELECT * FROM login_info";
-                
-                //create reader from command and read all rows given
-                var reader = await cmd.ExecuteReaderAsync();
-                return await readAllAsync(reader);
+                UserModel user = new UserModel();
+
+                //create query which returns user login info with given email
+                cmd.CommandText = "SELECT * " +
+                    "FROM login_info " +
+                    "WHERE email = @email";
+                cmd.Parameters.AddWithValue("@email", email);
+                //read result from login_info query set user login info
+                using (var reader = await cmd.ExecuteReaderAsync())
+                {
+                    if (reader.Read())
+                    {
+                        user.user_id = reader.GetInt32(0);
+                        user.email = email;
+                        user.password = reader.GetString(2);
+                        user.salt = (byte[])reader["salt"];
+                    }
+                    else
+                    {
+                        return null;
+                    }
+                }
+
+                //create a query which returns user personal info with given email
+                cmd.CommandText = "SELECT * " +
+                    "FROM personal_info " +
+                    "WHERE user_id = @user_id";
+                cmd.Parameters.AddWithValue("@user_id", user.user_id);
+
+                //read result from personal_info query and set personal info
+                using (var reader = await cmd.ExecuteReaderAsync())
+                {
+                    if (reader.Read())
+                    {
+                        user.username = reader.GetString(1);
+                        user.full_name = reader.GetString(2);
+                        user.bio = reader.GetString(3);
+                    }
+                    else
+                    {
+                        return null;
+                    }
+                }
+
+                return user;
             }
         }
 
@@ -56,7 +96,7 @@ namespace HelprAPI
                         "VALUES (@user_id, @username, @full_name, @bio)";
                     //add user_id, username, full_name, and bio as parameters
                     //check that we get a valid uid before adding as parameter
-                    int uid = await getUserId(user.email);
+                    int uid = (await GetUser(user.email)).user_id;
                     if(uid < 0)
                     {
                         return false;
@@ -77,8 +117,61 @@ namespace HelprAPI
             }
         }
 
+        //add user token to authorization_tokens table
+        public async Task<bool> AddAuthorizationToken(int uid, string token)
+        {
+            using(var cmd = Db.Connection.CreateCommand())
+            {
+                //create SQL query to insert token as active token
+                cmd.CommandText = "INSERT INTO authorization_tokens (user_id, token)" +
+                    "VALUES (@user_id, @token)";
+                cmd.Parameters.AddWithValue("@user_id", uid);
+                cmd.Parameters.AddWithValue("@token", token);
+
+                //return true if token is successfully added
+                if(await cmd.ExecuteNonQueryAsync() > 0)
+                {
+                    return true;
+                }
+
+                return false;
+            }
+        }
+
+        //logout user using their authorization token
+        public async Task<bool> Logout(string token)
+        {
+            using(var cmd = Db.Connection.CreateCommand())
+            {
+                cmd.CommandText = "SELECT * FROM authorization_tokens " +
+                    "WHERE token = @token";
+                cmd.Parameters.AddWithValue("@token", token);
+
+                //if the SQL query returns any rows, delete user and return true, return false otherwise
+                using (var reader = await cmd.ExecuteReaderAsync())
+                {
+                    if (reader.Read())
+                    {
+                        await reader.CloseAsync();
+                        
+                        //attempt to delete token and return true if token is deleted
+                        cmd.CommandText = "DELETE FROM authorization_tokens WHERE token = @token";
+                        if(await cmd.ExecuteNonQueryAsync() > 0)
+                        {
+                            return true;
+                        }
+                        return false;
+                    }
+                    else
+                    {
+                        return false;
+                    }
+                }
+            }
+        }
+
         //method which determines whether a field is already used in the users database
-        public async Task<bool> FieldTaken(string columnName, string value)
+        public async Task<bool> FieldAlreadyExists(string columnName, string value)
         {
             if(!validColumnName(columnName))
             {
@@ -90,7 +183,7 @@ namespace HelprAPI
 
             using(var cmd = Db.Connection.CreateCommand())
             {
-                //create SQL command to find rows where value is in columnName
+                //create SQL query to find rows where value is in columnName
                 cmd.CommandText = $"SELECT * FROM {table} WHERE {columnName} = @value";
                 cmd.Parameters.AddWithValue("@value", value);
 
@@ -108,31 +201,31 @@ namespace HelprAPI
             return false;
         }
 
-        //read user_id from database for user with email = email, returns -1 if no such user is found
-        private async Task<int> getUserId(string email)
+        //method which determines whether a user is logged in by user_id
+        public async Task<bool> UserLoggedIn(int uid)
         {
             using(var cmd = Db.Connection.CreateCommand())
             {
-                //create query which returns user with given email
-                cmd.CommandText = "SELECT user_id " +
-                    "FROM login_info " +
-                    "WHERE email = @email";
-                cmd.Parameters.AddWithValue("@email", email);
+                //create SQL query to find rows where user_id is uid
+                cmd.CommandText = "SELECT * FROM authorization_tokens WHERE user_id = @user_id";
+                cmd.Parameters.AddWithValue("@user_id", uid);
 
-                //read result from query and return user_id if user exists, -1 otherwise
+                //if the SQL query returns any rows, return true, false otherwise
                 using(var reader = await cmd.ExecuteReaderAsync())
                 {
                     if(reader.Read())
                     {
-                        return reader.GetInt32(0);
+                        return true;
                     }
                     else
                     {
-                        return -1;
+                        return false;
                     }
                 }
             }
         }
+
+        //Private helper methods:
 
         //determine whether col is a valid column name for SQL query
         private bool validColumnName(string col)
@@ -150,6 +243,7 @@ namespace HelprAPI
             return false;
         }
 
+        /*
         //read all rows of user_info and return list of UserModels
         private async Task<List<UserModel>> readAllAsync(DbDataReader reader)
         {
@@ -173,5 +267,6 @@ namespace HelprAPI
             }
             return users;
         }
+        */
     }
 }

@@ -971,6 +971,15 @@
           "lib/netstandard1.6/NuGet.Frameworks.dll": {}
         }
       },
+      "RandomStringUtils/0.2.5732": {
+        "type": "package",
+        "compile": {
+          "lib/RandomStringUtils.dll": {}
+        },
+        "runtime": {
+          "lib/RandomStringUtils.dll": {}
+        }
+      },
       "runtime.debian.8-x64.runtime.native.System.Security.Cryptography.OpenSsl/4.3.0": {
         "type": "package",
         "runtimeTargets": {
@@ -4499,6 +4508,18 @@
         "lib/netstandard1.6/NuGet.Frameworks.xml",
         "nuget.frameworks.4.7.0.nupkg.sha512",
         "nuget.frameworks.nuspec"
+      ]
+    },
+    "RandomStringUtils/0.2.5732": {
+      "sha512": "9v3HvWmXoQ9ufqifMGw6uvY14GgAyL+1OTCj3DoSUwWhqSLsq01u6oIJYGPp+mD3fcNUGtFfJRGFEWkyun41FA==",
+      "type": "package",
+      "path": "randomstringutils/0.2.5732",
+      "files": [
+        ".nupkg.metadata",
+        ".signature.p7s",
+        "lib/RandomStringUtils.dll",
+        "randomstringutils.0.2.5732.nupkg.sha512",
+        "randomstringutils.nuspec"
       ]
     },
     "runtime.debian.8-x64.runtime.native.System.Security.Cryptography.OpenSsl/4.3.0": {
@@ -9336,7 +9357,8 @@
       "Microsoft.EntityFrameworkCore.Sqlite >= 3.1.1",
       "Microsoft.EntityFrameworkCore.Tools >= 3.1.1",
       "Microsoft.VisualStudio.Web.CodeGeneration.Design >= 3.1.1",
-      "MySql.Data.EntityFrameworkCore >= 8.0.19"
+      "MySql.Data.EntityFrameworkCore >= 8.0.19",
+      "RandomStringUtils >= 0.2.5732"
     ]
   },
   "packageFolders": {
@@ -9405,6 +9427,10 @@
           "MySql.Data.EntityFrameworkCore": {
             "target": "Package",
             "version": "[8.0.19, )"
+          },
+          "RandomStringUtils": {
+            "target": "Package",
+            "version": "[0.2.5732, )"
           }
         },
         "imports": [
@@ -9428,5 +9454,17 @@
         "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\3.1.101\\RuntimeIdentifierGraph.json"
       }
     }
-  }
+  },
+  "logs": [
+    {
+      "code": "NU1701",
+      "level": "Warning",
+      "warningLevel": 1,
+      "message": "Package 'RandomStringUtils 0.2.5732' was restored using '.NETFramework,Version=v4.6.1, .NETFramework,Version=v4.6.2, .NETFramework,Version=v4.7, .NETFramework,Version=v4.7.1, .NETFramework,Version=v4.7.2, .NETFramework,Version=v4.8' instead of the project target framework '.NETCoreApp,Version=v3.1'. This package may not be fully compatible with your project.",
+      "libraryId": "RandomStringUtils",
+      "targetGraphs": [
+        ".NETCoreApp,Version=v3.1"
+      ]
+    }
+  ]
 }
