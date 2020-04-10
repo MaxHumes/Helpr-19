@@ -31,6 +31,7 @@
           "Microsoft.EntityFrameworkCore.Tools": "3.1.1",
           "Microsoft.VisualStudio.Web.CodeGeneration.Design": "3.1.1",
           "MySql.Data.EntityFrameworkCore": "8.0.19",
+          "RandomStringUtils": "0.2.5732",
           "Microsoft.AspNetCore.Antiforgery": "3.1.0.0",
           "Microsoft.AspNetCore.Authentication.Abstractions": "3.1.0.0",
           "Microsoft.AspNetCore.Authentication.Cookies": "3.1.0.0",
@@ -1266,6 +1267,17 @@
         },
         "compile": {
           "lib/netstandard1.6/NuGet.Frameworks.dll": {}
+        }
+      },
+      "RandomStringUtils/0.2.5732": {
+        "runtime": {
+          "lib/RandomStringUtils.dll": {
+            "assemblyVersion": "0.2.5732.22997",
+            "fileVersion": "0.2.5732.22997"
+          }
+        },
+        "compile": {
+          "lib/RandomStringUtils.dll": {}
         }
       },
       "runtime.debian.8-x64.runtime.native.System.Security.Cryptography.OpenSsl/4.3.0": {},
@@ -4582,6 +4594,13 @@
       "sha512": "sha512-qbXaB76XYUVLocLBs8Z9TS/ERGK2wm797feO+0JEPFvT7o7MRadOR77mqaSD4J1k8G+DlZQyq+MlkCuxrkr3ag==",
       "path": "nuget.frameworks/4.7.0",
       "hashPath": "nuget.frameworks.4.7.0.nupkg.sha512"
+    },
+    "RandomStringUtils/0.2.5732": {
+      "type": "package",
+      "serviceable": true,
+      "sha512": "sha512-9v3HvWmXoQ9ufqifMGw6uvY14GgAyL+1OTCj3DoSUwWhqSLsq01u6oIJYGPp+mD3fcNUGtFfJRGFEWkyun41FA==",
+      "path": "randomstringutils/0.2.5732",
+      "hashPath": "randomstringutils.0.2.5732.nupkg.sha512"
     },
     "runtime.debian.8-x64.runtime.native.System.Security.Cryptography.OpenSsl/4.3.0": {
       "type": "package",

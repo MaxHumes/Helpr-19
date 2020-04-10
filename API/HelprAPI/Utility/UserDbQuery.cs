@@ -81,7 +81,7 @@ namespace HelprAPI
                 {
                     //add text for login_info SQL query
                     cmd.CommandText = "INSERT INTO login_info (email, password, salt)" +
-                                      "VALUES (@email, @password, @salt)";
+                        "VALUES (@email, @password, @salt)";
                     //add email, password, and salt as parameters
                     cmd.Parameters.AddWithValue("@email", user.email);
                     cmd.Parameters.AddWithValue("@password", user.password);
@@ -242,31 +242,5 @@ namespace HelprAPI
             }
             return false;
         }
-
-        /*
-        //read all rows of user_info and return list of UserModels
-        private async Task<List<UserModel>> readAllAsync(DbDataReader reader)
-        {
-            var users = new List<UserModel>();
-            using (reader)
-            {
-                //while the reader still has unread rows
-                while (await reader.ReadAsync())
-                {
-                    //add user to list
-                    var user = new UserModel()
-                    {
-                        user_id = reader.GetInt32(0),
-                        email = reader.GetString(1),
-                        password = reader.GetString(2),
-                        salt = (byte[])reader["salt"]
-                    };
-
-                    users.Add(user);
-                }
-            }
-            return users;
-        }
-        */
     }
 }

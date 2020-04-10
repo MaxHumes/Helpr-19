@@ -14,7 +14,6 @@ namespace HelprAPI.Controllers
         //fields for accessing database connection and querying the datbase
         private AppDb Db;
         private UserDbQuery Query;
-
         public UsersController(AppDb db)
         {
             Db = db;
@@ -28,6 +27,7 @@ namespace HelprAPI.Controllers
         public async Task<IActionResult> PostNewUser([FromBody] UserModel body)
         {
             await Db.Connection.OpenAsync();
+            await Db.Connection.ChangeDataBaseAsync("users");
 
             //check that valid email address was inputted and email and username do not match any others in the database
             if (!IsValidEmail(body.email))
@@ -68,6 +68,7 @@ namespace HelprAPI.Controllers
         public async Task<IActionResult> PostLogin([FromBody] UserModel body)
         {
             await Db.Connection.OpenAsync();
+            await Db.Connection.ChangeDataBaseAsync("users");
 
             //get user from database with given email
             UserModel user = await Query.GetUser(body.email.ToLower());
@@ -106,9 +107,10 @@ namespace HelprAPI.Controllers
         public async Task<IActionResult> PostLogout([FromBody] AuthorizationTokenModel token)
         {
             await Db.Connection.OpenAsync();
+            await Db.Connection.ChangeDataBaseAsync("users");
 
             //return 200 if user is successfully logged out
-            if(await Query.Logout(token.token))
+            if (await Query.Logout(token.token))
             {
                 return new OkResult();
             }
