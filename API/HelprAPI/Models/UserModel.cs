@@ -11,5 +11,23 @@
         public string bio { get; set; }
 
         public UserModel() {}
+
+        public bool IsValidUser()
+        {
+            if(email == null | password == null | username == null)
+            {
+                return false;
+            }
+            return true;
+        }
+
+        public bool IsValidLogin()
+        {
+            if (email == null | password == null)
+            {
+                return false;
+            }
+            return true;
+        }
     }
 }

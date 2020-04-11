@@ -18,7 +18,7 @@ namespace HelprAPI
         //query methods:
 
         //get user as UserModel from database where email = email
-        public async Task<UserModel> GetUser(string email)
+        public async Task<UserModel> GetUserLogin(string email)
         {
             await Db.Connection.ChangeDataBaseAsync("users");
 
@@ -46,28 +46,6 @@ namespace HelprAPI
                         return null;
                     }
                 }
-
-                //create a query which returns user personal info with given email
-                cmd.CommandText = "SELECT * " +
-                    "FROM personal_info " +
-                    "WHERE user_id = @user_id";
-                cmd.Parameters.AddWithValue("@user_id", user.user_id);
-
-                //read result from personal_info query and set personal info
-                using (var reader = await cmd.ExecuteReaderAsync())
-                {
-                    if (reader.Read())
-                    {
-                        user.username = reader.GetString(1);
-                        user.full_name = reader.GetString(2);
-                        user.bio = reader.GetString(3);
-                    }
-                    else
-                    {
-                        return null;
-                    }
-                }
-
                 return user;
             }
         }
@@ -99,7 +77,7 @@ namespace HelprAPI
                         "VALUES (@user_id, @username, @full_name, @bio)";
                     //add user_id, username, full_name, and bio as parameters
                     //check that we get a valid uid before adding as parameter
-                    int uid = (await GetUser(user.email)).user_id;
+                    int uid = (await GetUserLogin(user.email)).user_id;
                     if(uid < 0)
                     {
                         return false;

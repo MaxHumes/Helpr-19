@@ -26,10 +26,15 @@ namespace HelprAPI.Controllers
         [HttpPost("add")]
         public async Task<IActionResult> PostNewUser([FromBody] UserModel body)
         {
+            if(!body.IsValidUser())
+            {
+                return new NotFoundObjectResult("Invalid body");
+            }
+
             await Db.Connection.OpenAsync();
 
             //check that valid email address was inputted and email and username do not match any others in the database
-            if (!IsValidEmail(body.email))
+            if (!isValidEmail(body.email))
             {
                 return new NotFoundObjectResult("Invalid email address");
             }
@@ -41,7 +46,7 @@ namespace HelprAPI.Controllers
             {
                 return new NotFoundObjectResult("Username already taken");
             }
-
+            
             body.email = (body.email).ToLower();
 
             //generate salt and add to user model
@@ -66,10 +71,15 @@ namespace HelprAPI.Controllers
         [HttpPost ("login")]
         public async Task<IActionResult> PostLogin([FromBody] UserModel body)
         {
+            if (!body.IsValidLogin())
+            {
+                return new NotFoundObjectResult("Invalid body");
+            }
+            
             await Db.Connection.OpenAsync();
 
             //get user from database with given email
-            UserModel user = await Query.GetUser(body.email.ToLower());
+            UserModel user = await Query.GetUserLogin(body.email.ToLower());
 
             //return 404 code if user is already logged in
             if(await Query.UserLoggedIn(user.user_id))
@@ -117,7 +127,7 @@ namespace HelprAPI.Controllers
 
         //Private helper methods:
 
-        private bool IsValidEmail(string email)
+        private bool isValidEmail(string email)
         {
             try
             {

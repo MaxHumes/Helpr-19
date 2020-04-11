@@ -31,8 +31,13 @@ namespace HelprAPI.Controllers
         [HttpPost ("add/thread")]
         public async Task<IActionResult> PostNewThread([FromBody] ThreadModel body, [FromHeader] string token)
         {
-            await Db.Connection.OpenAsync();
+            if(!body.IsValidThread())
+            {
+                return new NotFoundObjectResult("Invalid body");
+            }
             
+            await Db.Connection.OpenAsync();
+
             //check that user is logged in
             if(await AuthorizationQuery.GetTokenModel(token) != null)
             {
@@ -61,11 +66,18 @@ namespace HelprAPI.Controllers
         [HttpPost("add/post")]
         public async Task<IActionResult> PostPost([FromBody] PostModel body, [FromHeader] string token)
         {
+            if(!body.IsValidPost())
+            {
+                return new NotFoundObjectResult("Invalid body");
+            }
+
             await Db.Connection.OpenAsync();
 
+            var tokenModel = await AuthorizationQuery.GetTokenModel(token);
             //check that user is logged in
-            if (await AuthorizationQuery.GetTokenModel(token) != null)
+            if (tokenModel != null)
             {
+                body.user_id = tokenModel.user_id;
                 if (await PostQuery.AddPost(body))
                 {
                     return new OkResult();
@@ -86,6 +98,11 @@ namespace HelprAPI.Controllers
         [HttpGet ("posts")]
         public async Task<IActionResult> GetPosts([FromBody] ThreadModel body, [FromHeader] string token)
         {
+            if(!body.thread_id.HasValue)
+            {
+                return new NotFoundObjectResult("Invalid body");
+            }
+            
             await Db.Connection.OpenAsync();
 
             //check that user is logged in
