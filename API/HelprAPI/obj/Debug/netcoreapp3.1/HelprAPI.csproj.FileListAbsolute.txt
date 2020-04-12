@@ -149,7 +149,6 @@ C:\Users\juneb\OneDrive\Documents\GitHub\Helpr-19\API\HelprAPI\bin\Debug\netcore
 C:\Users\juneb\OneDrive\Documents\GitHub\Helpr-19\API\HelprAPI\bin\Debug\netcoreapp3.1\runtimes\win\lib\netstandard2.0\System.Security.Cryptography.ProtectedData.dll
 C:\Users\juneb\OneDrive\Documents\GitHub\Helpr-19\API\HelprAPI\obj\Debug\netcoreapp3.1\staticwebassets\HelprAPI.StaticWebAssets.Manifest.cache
 C:\Users\juneb\OneDrive\Documents\GitHub\Helpr-19\API\HelprAPI\obj\Debug\netcoreapp3.1\staticwebassets\HelprAPI.StaticWebAssets.xml
-C:\Users\juneb\OneDrive\Documents\GitHub\Helpr-19\API\HelprAPI\obj\Debug\netcoreapp3.1\HelprAPI.MvcApplicationPartsAssemblyInfo.cache
 C:\Users\juneb\OneDrive\Documents\GitHub\Helpr-19\API\HelprAPI\obj\Debug\netcoreapp3.1\HelprAPI.AssemblyInfoInputs.cache
 C:\Users\juneb\OneDrive\Documents\GitHub\Helpr-19\API\HelprAPI\obj\Debug\netcoreapp3.1\HelprAPI.AssemblyInfo.cs
 C:\Users\juneb\OneDrive\Documents\GitHub\Helpr-19\API\HelprAPI\obj\Debug\netcoreapp3.1\HelprAPI.RazorTargetAssemblyInfo.cache
@@ -157,3 +156,5 @@ C:\Users\juneb\OneDrive\Documents\GitHub\Helpr-19\API\HelprAPI\obj\Debug\netcore
 C:\Users\juneb\OneDrive\Documents\GitHub\Helpr-19\API\HelprAPI\obj\Debug\netcoreapp3.1\HelprAPI.dll
 C:\Users\juneb\OneDrive\Documents\GitHub\Helpr-19\API\HelprAPI\obj\Debug\netcoreapp3.1\HelprAPI.pdb
 C:\Users\juneb\OneDrive\Documents\GitHub\Helpr-19\API\HelprAPI\obj\Debug\netcoreapp3.1\HelprAPI.csprojAssemblyReference.cache
+C:\Users\juneb\OneDrive\Documents\GitHub\Helpr-19\API\HelprAPI\bin\Debug\netcoreapp3.1\System.Device.Portable.dll
+C:\Users\juneb\OneDrive\Documents\GitHub\Helpr-19\API\HelprAPI\obj\Debug\netcoreapp3.1\HelprAPI.MvcApplicationPartsAssemblyInfo.cache

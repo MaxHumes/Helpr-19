@@ -3,16 +3,18 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using System.Data.Common;
 using HelprAPI.Models;
-using MySql.Data.MySqlClient;
+using HelprAPI.Utility.PostComparers;
 
 namespace HelprAPI.Utility
 {
     public class PostDbQuery
     {
         private AppDb Db;
+        private UserDbQuery userQuery;
         public PostDbQuery(AppDb db)
         {
             Db = db;
+            userQuery = new UserDbQuery(Db);
         }
 
         //add thread to threads table given name and description
@@ -64,9 +66,20 @@ namespace HelprAPI.Utility
 
             using (var cmd = Db.Connection.CreateCommand())
             {
-                //create SQL query to insert post into posts table
-                cmd.CommandText = "INSERT INTO posts (thread_id, user_id, name, description)" +
-                    "VALUES (@thread_id, @user_id, @name, @description)";
+                if(post.GetGeoCoordinates() == null)
+                {
+                    //create SQL query to insert post into posts table without location
+                    cmd.CommandText = "INSERT INTO posts (thread_id, user_id, name, description)" +
+                        "VALUES (@thread_id, @user_id, @name, @description)";
+                }
+                else
+                {
+                    //create SQL query to insert post into posts table with location
+                    cmd.CommandText = "INSERT INTO posts (thread_id, user_id, name, description, latitude, longitude)" +
+                        "VALUES (@thread_id, @user_id, @name, @description, @latitude, @longitude)";
+                    cmd.Parameters.AddWithValue("@latitude", post.latitude);
+                    cmd.Parameters.AddWithValue("@longitude", post.longitude);
+                }
                 cmd.Parameters.AddWithValue("@thread_id", post.thread_id);
                 cmd.Parameters.AddWithValue("@user_id", post.user_id);
                 cmd.Parameters.AddWithValue("@name", post.name);
@@ -86,7 +99,7 @@ namespace HelprAPI.Utility
         }
 
         //get all posts in given thread
-        public async Task<List<PostModel>> GetPosts(ThreadModel thread)
+        public async Task<List<PostModel>> GetPosts(ThreadModel thread, AuthorizationTokenModel token, UserModel location)
         {
             await Db.Connection.ChangeDataBaseAsync("posts");
             
@@ -98,7 +111,7 @@ namespace HelprAPI.Utility
                 
                 using(var reader = await cmd.ExecuteReaderAsync())
                 {
-                    return await readAllPostsAsync(reader);
+                    return await readAllPostsAsync(reader, location);
                 }
             }
         }
@@ -127,27 +140,40 @@ namespace HelprAPI.Utility
             return threads;
         }
 
-        //read all rows of postsand return list of posts
-        private async Task<List<PostModel>> readAllPostsAsync(DbDataReader reader)
+        //read all rows of posts and return list of posts sorted by distance
+        private async Task<List<PostModel>> readAllPostsAsync(DbDataReader reader, UserModel location)
         {
             var posts = new List<PostModel>();
+            var userCoordinates = location.GetGeoCoordinates();
             using (reader)
             {
                 //while the reader still has unread rows
                 while (await reader.ReadAsync())
                 {
-                    //add post to list
+                    //read post from response
                     var post = new PostModel()
                     {
                         post_id = reader.GetInt32(0),
                         thread_id = reader.GetInt32(1),
                         user_id = reader.GetInt32(2),
                         name = reader.GetString(3),
-                        description = reader.GetString(4)
+                        description = reader.GetString(4),
                     };
+                    //if user and post geocoordinates are not null, set the post's distance from user
+                    try
+                    {
+                        post.latitude = (double?)reader["latitude"];
+                        post.longitude = (double?)reader["longitude"];
+
+                        post.SetDistFromUser(userCoordinates);
+                    }
+                    catch { }
                     posts.Add(post);
                 }
             }
+
+            //sort posts in order of ascending distance from the user
+            posts.Sort(new DistanceComparer().Compare);
             return posts;
         }
     }

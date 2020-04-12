@@ -1,7 +1,5 @@
-﻿using System;
-using System.Threading.Tasks;
+﻿using System.Threading.Tasks;
 using HelprAPI.Models;
-using MySql.Data.MySqlClient;
 
 namespace HelprAPI.Utility
 {
@@ -22,7 +20,7 @@ namespace HelprAPI.Utility
 
             using (var cmd = Db.Connection.CreateCommand())
             {
-                //create SQL query to find rows where user_id is uid
+                //create SQL query to find rows where token is token
                 cmd.CommandText = "SELECT * FROM authorization_tokens WHERE token = @token";
                 cmd.Parameters.AddWithValue("@token", token);
 

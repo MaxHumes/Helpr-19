@@ -1,4 +1,5 @@
-﻿namespace HelprAPI.Models
+﻿using System.Device.Location;
+namespace HelprAPI.Models
 {
     public class UserModel
     {
@@ -9,8 +10,18 @@
         public string username { get; set; }
         public string full_name { get; set; }
         public string bio { get; set; }
+        public double? latitude { get; set; }
+        public double? longitude { get; set; }
+        public UserModel() { }
 
-        public UserModel() {}
+        public GeoCoordinate GetGeoCoordinates()
+        {
+            if ((latitude.HasValue && longitude.HasValue) && (latitude < 500 && longitude < 500))
+            {
+                return new GeoCoordinate((double)latitude, (double)longitude);
+            }
+            return null;
+        }
 
         public bool IsValidUser()
         {
