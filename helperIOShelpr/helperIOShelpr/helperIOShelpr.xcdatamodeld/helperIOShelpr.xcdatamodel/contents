@@ -1,24 +1,4 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
 <model type="com.apple.IDECoreDataModeler.DataModel" documentVersion="1.0" lastSavedToolsVersion="15702" systemVersion="19E266" minimumToolsVersion="Automatic" sourceLanguage="Swift" usedWithCloudKit="YES" userDefinedModelVersionIdentifier="">
-    <entity name="Post" representedClassName="Post" syncable="YES" codeGenerationType="class">
-        <attribute name="author_name" optional="YES" attributeType="String"/>
-        <attribute name="job_type" optional="YES" attributeType="String"/>
-        <attribute name="message" optional="YES" attributeType="String" minValueString="0" defaultValueString=""/>
-        <attribute name="post_id" optional="YES" attributeType="Integer 32" defaultValueString="0" usesScalarValueType="YES"/>
-        <attribute name="timestamp" optional="YES" attributeType="Date" usesScalarValueType="NO"/>
-    </entity>
-    <entity name="UserInfo" representedClassName="UserInfo" syncable="YES" codeGenerationType="class">
-        <attribute name="customer_id" optional="YES" attributeType="Integer 32" defaultValueString="0" usesScalarValueType="YES"/>
-        <attribute name="email" optional="YES" attributeType="String"/>
-        <attribute name="full_name" optional="YES" attributeType="String"/>
-        <attribute name="helpr_id" optional="YES" attributeType="Integer 32" defaultValueString="0" usesScalarValueType="YES"/>
-        <attribute name="high_risk" optional="YES" attributeType="Boolean" usesScalarValueType="YES"/>
-        <attribute name="password" optional="YES" attributeType="String"/>
-        <attribute name="user_id" optional="YES" attributeType="Integer 32" defaultValueString="0" usesScalarValueType="YES"/>
-        <attribute name="username" optional="YES" attributeType="String"/>
-    </entity>
-    <elements>
-        <element name="Post" positionX="247.12109375" positionY="-70.46484375" width="128" height="118"/>
-        <element name="UserInfo" positionX="184.9921875" positionY="221.171875" width="128" height="163"/>
-    </elements>
+    <elements/>
 </model>

@@ -14,11 +14,12 @@ class UserLogin: UIViewController {
     //var httpResponse: URLResponse? = nil
     //var userData: Data? = nil
     
-    var token: Data? = nil
+    //var token: Data? = nil
+    var task: URLSessionDataTask? = nil
     
     
-    var masterControl: MasterViewController? = nil
-    //var detailControl: DetailViewController? = nil
+    var masterControl: MasterViewController?
+    var detailControl: DetailViewController?
     //var gesture: UITapGestureRecognizer? = /UITapGestureRecognizer(target: self, action: #selector(onLoginTapped(_:)))
     
     
@@ -43,7 +44,8 @@ class UserLogin: UIViewController {
    
     
     @IBAction func onLoginReleased(_ sender: UIButton) {
-        performSegue(withIdentifier: "showDetail", sender: sender)
+        
+        performSegue(withIdentifier: "postLogin", sender: sender)
     }
     
         
@@ -75,12 +77,12 @@ class UserLogin: UIViewController {
         request.addValue("application/json", forHTTPHeaderField: "Content-Type")
         print(request.allHTTPHeaderFields!.count)
         print("$$$$")
-        for key in request.allHTTPHeaderFields!.keys {
-            print("\(key): \(String(describing: request.allHTTPHeaderFields![key]))")
-        }
+       // for key in request.allHTTPHeaderFields!.keys {
+         //   print("\(key): \(String(describing: request.allHTTPHeaderFields![key]))")
+        //}
         print("$$$$")
         
-        let task = URLSession.shared.dataTask(with: request) { data, response, error in
+        task = URLSession.shared.dataTask(with: request) { data, response, error in
             guard let data = data else {
                 print(String(describing: error))
                 return
@@ -90,16 +92,19 @@ class UserLogin: UIViewController {
                 print(String(describing: error))
                 return
             }
-            print(String(data: data, encoding: .utf8)!)
+           // print(String(data: data, encoding: .utf8)!)
             print("\n\n\nresponse: \(String(describing: response))")
-            self.token = data
+            token = data
+            
+            print(String(data: token!, encoding: .utf8)!)
             semaphore.signal()
         }
         
         //print("response: \(response)")
         
-        task.resume()
+        task!.resume()
         semaphore.wait()
+        //performSegue(withIdentifier: "postLogin", sender: sender)
         /*
         let session = URLSession.shared
         session.dataTask(with: request) { (data, response, error) in
@@ -140,12 +145,15 @@ class UserLogin: UIViewController {
        if segue.identifier == "postLogin" {
             
             //addChild(segue.destination)
-            //let splitController = segue.destination as! UISplitViewController
+           // let splitController = segue.destination as! UISplitViewController
             //let jawn = splitController.viewControllers[0]
             //let jawn2 = splitController.viewControllers[1]
-            masterControl = (segue.destination as? UINavigationController)?.topViewController as? MasterViewController
-            masterControl!.token = self.token
-           // detailControl = (splitController.viewControllers[1] as! UINavigationController).topViewController as? DetailViewController
+         //   let jawnson = segue.destination
+        //let jawnson2 = (jawnson as? UINavigationController)?.topViewController
+        //    masterControl = (segue.destination as? UINavigationController)?.topViewController as? MasterViewController
+           // masterControl!.token = self.token
+            //task!.cancel()
+          //  detailControl = (splitController.viewControllers[1] as! UINavigationController).topViewController as? DetailViewController
             //detailControl?.managedObjectContext = masterControl?.managedObjectContext
         }
         

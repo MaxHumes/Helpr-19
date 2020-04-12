@@ -19,8 +19,7 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate, UISplitViewControllerDe
         // This delegate does not imply the connecting scene or session are new (see `application:configurationForConnectingSceneSession` instead).
         guard let window = window else { return }
         
-        guard window.rootViewController != nil
-        
+         //window.rootViewController != nil
         //let root = window.rootViewController
         //guard let kiddo = root?.children[0] else {
           //  print("BITCH")
@@ -116,11 +115,11 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate, UISplitViewControllerDe
     func splitViewController(_ splitViewController: UISplitViewController, collapseSecondary secondaryViewController:UIViewController, onto primaryViewController:UIViewController) -> Bool {
         guard let secondaryAsNavController = secondaryViewController as? UINavigationController else { return false }
         guard let topAsDetailController = secondaryAsNavController.topViewController as? DetailViewController else { return false }
-        if topAsDetailController.detailItem == nil {
+        //if topAsDetailController.thread == nil {
              //Return true to indicate that we have handled the collapse by doing nothing; the secondary controller will be discarded.
-             return true
-        }
-        return false
+          //   return true
+        //}
+        return true
     }
 
 }

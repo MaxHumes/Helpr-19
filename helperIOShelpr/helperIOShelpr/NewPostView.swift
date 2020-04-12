@@ -1,34 +1,38 @@
 //
-//  NewThreadView.swift
+//  NewPostView.swift
 //  helperIOShelpr
 //
-//  Created by Sam Horn on 4/5/20.
+//  Created by Sam Horn on 4/12/20.
 //  Copyright © 2020 Sam Horn. All rights reserved.
 //
 
 import UIKit
 import Foundation
 
-class NewThreadView: UIViewController {
+class NewPostView: UIViewController {
 
-    @IBOutlet weak var thread: UITextField!
     
-    @IBOutlet weak var message: UITextField!
+    @IBOutlet weak var nameText: UITextField!
     
-   /// var threadText: String = ""
-    //var messageText: String = ""
-    var wasRecentView: Bool = false
+    @IBOutlet weak var messageText: UITextField!
     
-    @IBAction func onTouch(_ sender: Any) {
-        //threadText = thread.text!/ messageText = message.text!
+  //  var nameString: String = ""
+    //var messageString: String = ""
+  //  var wasRecentView: Bool = false
+    var thread_id: Int?
+    var name: String?
+    var descriptor: String?
+    
+    @IBAction func onEnter(_ sender: Any) {
+        //nameString = nameText.text!
+        //messageString = messageText.text!
         
         let semaphore = DispatchSemaphore (value: 0)
-        
-        let parameters = ["name": thread.text!, "description": message.text!] as [String : Any]
+        let parameters = ["thread_id": thread_id!, "name": nameText.text!, "description": messageText.text!] as [String : Any]
         guard let httpBody = try? JSONSerialization.data(withJSONObject: parameters, options: []) else  {
             return
         }
-        let url = URL(string: "https://helpr19api.azurewebsites.net/api/posts/add/thread")!
+        let url = URL(string: "https://helpr19api.azurewebsites.net/api/posts/add/post")!
         var request = URLRequest(url: url, timeoutInterval: Double.infinity)
         request.httpMethod = "POST"
         request.httpBody = httpBody
@@ -53,23 +57,21 @@ class NewThreadView: UIViewController {
         task.resume()
         semaphore.wait()
         task.suspend()
-    }
+        }
+        
+    
     
     override func viewDidLoad() {
         super.viewDidLoad()
 
-    // Do any additional setup after loading the view.
-
+        // Do any additional setup after loading the view.
     }
     
     override func viewWillDisappear(_ animated: Bool) {
-       // wasRecentView = true
+        //wasRecentView = true
         super.viewWillDisappear(animated)
-
     }
- 
     
-
     /*
     // MARK: - Navigation
 
