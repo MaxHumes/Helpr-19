@@ -99,7 +99,7 @@ namespace HelprAPI.Utility
         }
 
         //get all posts in given thread
-        public async Task<List<PostModel>> GetPosts(ThreadModel thread, AuthorizationTokenModel token, UserModel location)
+        public async Task<List<PostModel>> GetPosts(int tid, AuthorizationTokenModel token, UserModel location)
         {
             await Db.Connection.ChangeDataBaseAsync("posts");
             
@@ -107,7 +107,7 @@ namespace HelprAPI.Utility
             {
                 cmd.CommandText = "SELECT * FROM posts " +
                     "WHERE thread_id = @thread_id";
-                cmd.Parameters.AddWithValue("@thread_id", thread.thread_id);
+                cmd.Parameters.AddWithValue("@thread_id", tid);
                 
                 using(var reader = await cmd.ExecuteReaderAsync())
                 {

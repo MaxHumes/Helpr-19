@@ -56,7 +56,7 @@ namespace HelprAPI.Controllers
         }
 
         //GET /api/posts/threads
-        [HttpGet("threads")]
+        [HttpGet("get/threads")]
         public async Task<IActionResult> GetThreads()
         {
             await Db.Connection.OpenAsync();
@@ -102,14 +102,9 @@ namespace HelprAPI.Controllers
         }
 
         //GET /api/posts/posts
-        [HttpGet ("posts")]
-        public async Task<IActionResult> GetPosts([FromBody] ThreadModel body, [FromHeader] string token)
-        {
-            if(!body.thread_id.HasValue)
-            {
-                return new NotFoundObjectResult("Invalid body");
-            }
-            
+        [HttpGet ("get/{id}")]
+        public async Task<IActionResult> GetPosts([FromRoute] int id, [FromHeader] string token)
+        {            
             await Db.Connection.OpenAsync();
 
             //check that user is logged in
@@ -118,7 +113,7 @@ namespace HelprAPI.Controllers
             if (userToken != null)
             {
                 //return list of posts
-                return new OkObjectResult(await postQuery.GetPosts(body, userToken, userLocation));
+                return new OkObjectResult(await postQuery.GetPosts(id, userToken, userLocation));
             }
 
             return new NotFoundObjectResult("User must be logged in to view posts");
