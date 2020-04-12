@@ -50,6 +50,38 @@ namespace HelprAPI
             }
         }
 
+        //get user's location from uid
+        public async Task<UserModel> GetUserLocation(int uid)
+        {
+            await Db.Connection.ChangeDataBaseAsync("users");
+
+            using(var cmd = Db.Connection.CreateCommand())
+            {
+                UserModel user = new UserModel();
+                
+                cmd.CommandText = "SELECT * " +
+                    "FROM location_info " +
+                    "WHERE user_id = @user_id";
+                cmd.Parameters.AddWithValue("@user_id", uid);
+
+                using(var reader = await cmd.ExecuteReaderAsync())
+                {
+                    if(reader.Read())
+                    {
+                        user.user_id = reader.GetInt32(0);
+                        user.latitude = (double?)reader.GetDouble(1);
+                        user.longitude = (double?)reader.GetDouble(2);
+                    }
+                    else
+                    {
+                        return null;
+                    }
+                }
+                
+                return user;
+            }
+        }
+
         //add user info given model to both login_info and personal_info
         public async Task<bool> AddUser(UserModel user)
         {
@@ -95,6 +127,29 @@ namespace HelprAPI
                 {
                     return false;
                 }
+            }
+        }
+
+        //should probably eventually be taken out in place of in app function so location can not be spoofed
+        //add user location to db
+        public async Task<bool> AddUserLocation(UserModel user)
+        {
+            await Db.Connection.ChangeDataBaseAsync("users");
+
+            using(var cmd = Db.Connection.CreateCommand())
+            {
+                cmd.CommandText = "INSERT INTO location_info (user_id, latitude, longitude) " +
+                    "VALUES (@user_id, @latitude, @longitude)";
+                cmd.Parameters.AddWithValue("@user_id", user.user_id);
+                cmd.Parameters.AddWithValue("latitude", user.latitude);
+                cmd.Parameters.AddWithValue("@longitude", user.longitude);
+
+                if(await cmd.ExecuteNonQueryAsync() > 0)
+                {
+                    return true;
+                }
+                
+                return false;
             }
         }
 

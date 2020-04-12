@@ -71,6 +71,10 @@
             "RandomStringUtils": {
               "target": "Package",
               "version": "[0.2.5732, )"
+            },
+            "System.Device.Location.Portable": {
+              "target": "Package",
+              "version": "[1.0.0, )"
             }
           },
           "imports": [

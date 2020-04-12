@@ -15,13 +15,15 @@ namespace HelprAPI.Controllers
     {
         //fields for accessing database connection and querying the datbase
         private AppDb Db;
-        private PostDbQuery PostQuery;
-        private AuthorizationQuery AuthorizationQuery;
+        private UserDbQuery userQuery;
+        private PostDbQuery postQuery;
+        private AuthorizationQuery authorizationQuery;
         public PostsController(AppDb db)
         {
             Db = db;
-            PostQuery = new PostDbQuery(Db);
-            AuthorizationQuery = new AuthorizationQuery(Db);
+            userQuery = new UserDbQuery(Db);
+            postQuery = new PostDbQuery(Db);
+            authorizationQuery = new AuthorizationQuery(Db);
         }
 
 
@@ -39,10 +41,10 @@ namespace HelprAPI.Controllers
             await Db.Connection.OpenAsync();
 
             //check that user is logged in
-            if(await AuthorizationQuery.GetTokenModel(token) != null)
+            if(await authorizationQuery.GetTokenModel(token) != null)
             {
                 //return 200 if thread is successfully added
-                if (await PostQuery.AddThread(body))
+                if (await postQuery.AddThread(body))
                 {
                     return new OkResult();
                 }
@@ -59,7 +61,7 @@ namespace HelprAPI.Controllers
         {
             await Db.Connection.OpenAsync();
             
-            return new OkObjectResult(await PostQuery.GetThreads());
+            return new OkObjectResult(await postQuery.GetThreads());
         }
 
         //POST /api/posts/add/post
@@ -73,12 +75,12 @@ namespace HelprAPI.Controllers
 
             await Db.Connection.OpenAsync();
 
-            var tokenModel = await AuthorizationQuery.GetTokenModel(token);
+            var tokenModel = await authorizationQuery.GetTokenModel(token);
             //check that user is logged in
             if (tokenModel != null)
             {
                 body.user_id = tokenModel.user_id;
-                if (await PostQuery.AddPost(body))
+                if (await postQuery.AddPost(body))
                 {
                     return new OkResult();
                 }
@@ -89,9 +91,6 @@ namespace HelprAPI.Controllers
             }
 
             return new NotFoundObjectResult("User must be logged in to create post");
-
-
-                                    //TODO: authorize thread_id and get user_id from token instead of body
         }
 
         //GET /api/posts/posts
@@ -106,13 +105,15 @@ namespace HelprAPI.Controllers
             await Db.Connection.OpenAsync();
 
             //check that user is logged in
-            if (await AuthorizationQuery.GetTokenModel(token) != null)
+            var userToken = await authorizationQuery.GetTokenModel(token);
+            var userLocation = await userQuery.GetUserLocation(userToken.user_id);
+            if (userToken != null)
             {
-                return new OkObjectResult(await PostQuery.GetPosts(body));
+                //return list of posts
+                return new OkObjectResult(await postQuery.GetPosts(body, userToken, userLocation));
             }
 
             return new NotFoundObjectResult("User must be logged in to view posts");
         }
-
     }
 }

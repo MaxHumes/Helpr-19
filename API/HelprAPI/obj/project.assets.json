@@ -1636,6 +1636,15 @@
           "ref/netstandard1.3/System.Console.dll": {}
         }
       },
+      "System.Device.Location.Portable/1.0.0": {
+        "type": "package",
+        "compile": {
+          "lib/System.Device.Portable.dll": {}
+        },
+        "runtime": {
+          "lib/System.Device.Portable.dll": {}
+        }
+      },
       "System.Diagnostics.Debug/4.3.0": {
         "type": "package",
         "dependencies": {
@@ -5635,6 +5644,18 @@
         "system.console.nuspec"
       ]
     },
+    "System.Device.Location.Portable/1.0.0": {
+      "sha512": "VttxozXEleYcK2NiMo7xKMhDCCJbKtjnxcWDmqu703DeceLTI/9jopfEblyZKL0DWHGyOYLEan06yk6Hcv2cXw==",
+      "type": "package",
+      "path": "system.device.location.portable/1.0.0",
+      "files": [
+        ".nupkg.metadata",
+        ".signature.p7s",
+        "lib/System.Device.Portable.dll",
+        "system.device.location.portable.1.0.0.nupkg.sha512",
+        "system.device.location.portable.nuspec"
+      ]
+    },
     "System.Diagnostics.Debug/4.3.0": {
       "sha512": "ZUhUOdqmaG5Jk3Xdb8xi5kIyQYAA4PnTNlHx1mu9ZY3qv4ELIdKbnL/akbGaKi2RnNUWaZsAs31rvzFdewTj2g==",
       "type": "package",
@@ -9358,7 +9379,8 @@
       "Microsoft.EntityFrameworkCore.Tools >= 3.1.1",
       "Microsoft.VisualStudio.Web.CodeGeneration.Design >= 3.1.1",
       "MySql.Data.EntityFrameworkCore >= 8.0.19",
-      "RandomStringUtils >= 0.2.5732"
+      "RandomStringUtils >= 0.2.5732",
+      "System.Device.Location.Portable >= 1.0.0"
     ]
   },
   "packageFolders": {
@@ -9431,6 +9453,10 @@
           "RandomStringUtils": {
             "target": "Package",
             "version": "[0.2.5732, )"
+          },
+          "System.Device.Location.Portable": {
+            "target": "Package",
+            "version": "[1.0.0, )"
           }
         },
         "imports": [
@@ -9462,6 +9488,16 @@
       "warningLevel": 1,
       "message": "Package 'RandomStringUtils 0.2.5732' was restored using '.NETFramework,Version=v4.6.1, .NETFramework,Version=v4.6.2, .NETFramework,Version=v4.7, .NETFramework,Version=v4.7.1, .NETFramework,Version=v4.7.2, .NETFramework,Version=v4.8' instead of the project target framework '.NETCoreApp,Version=v3.1'. This package may not be fully compatible with your project.",
       "libraryId": "RandomStringUtils",
+      "targetGraphs": [
+        ".NETCoreApp,Version=v3.1"
+      ]
+    },
+    {
+      "code": "NU1701",
+      "level": "Warning",
+      "warningLevel": 1,
+      "message": "Package 'System.Device.Location.Portable 1.0.0' was restored using '.NETFramework,Version=v4.6.1, .NETFramework,Version=v4.6.2, .NETFramework,Version=v4.7, .NETFramework,Version=v4.7.1, .NETFramework,Version=v4.7.2, .NETFramework,Version=v4.8' instead of the project target framework '.NETCoreApp,Version=v3.1'. This package may not be fully compatible with your project.",
+      "libraryId": "System.Device.Location.Portable",
       "targetGraphs": [
         ".NETCoreApp,Version=v3.1"
       ]

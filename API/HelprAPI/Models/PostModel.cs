@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-
+﻿using System.Device.Location;
 namespace HelprAPI.Models
 {
     public class PostModel
@@ -12,7 +8,26 @@ namespace HelprAPI.Models
         public int? user_id { get; set; }
         public string name { get; set; }
         public string description { get; set; }
+        public double? latitude { get; set; }
+        public double? longitude { get; set; }
+        //distance is in meters
+        public double? dist_from_user { get; set; }
+
         public PostModel() { }
+
+        public GeoCoordinate GetGeoCoordinates()
+        {
+            if ((latitude.HasValue && longitude.HasValue) && (latitude < 500 && longitude < 500))
+            {
+                return new GeoCoordinate((double)latitude, (double)longitude);
+            }
+            return null;
+        }
+
+        public void SetDistFromUser(GeoCoordinate userLocation)
+        {
+            dist_from_user = this.GetGeoCoordinates().GetDistanceTo(userLocation);
+        }
 
         public bool IsValidPost()
         {

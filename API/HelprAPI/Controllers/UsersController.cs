@@ -13,11 +13,13 @@ namespace HelprAPI.Controllers
     {
         //fields for accessing database connection and querying the datbase
         private AppDb Db;
-        private UserDbQuery Query;
+        private UserDbQuery userQuery;
+        private AuthorizationQuery authorizationQuery;
         public UsersController(AppDb db)
         {
             Db = db;
-            Query = new UserDbQuery(Db);
+            userQuery = new UserDbQuery(Db);
+            authorizationQuery = new AuthorizationQuery(Db);
         }
 
         //API Calls:
@@ -38,11 +40,11 @@ namespace HelprAPI.Controllers
             {
                 return new NotFoundObjectResult("Invalid email address");
             }
-            if(await Query.FieldAlreadyExists("email", body.email))
+            if(await userQuery.FieldAlreadyExists("email", body.email))
             {
                 return new NotFoundObjectResult("Email already taken");
             }
-            if(await Query.FieldAlreadyExists("username", body.username))
+            if(await userQuery.FieldAlreadyExists("username", body.username))
             {
                 return new NotFoundObjectResult("Username already taken");
             }
@@ -57,7 +59,7 @@ namespace HelprAPI.Controllers
             body.password = Security.HashPassword(body.password, salt);
 
             //return 200 if user was successfully added, 404 if user already exists
-            if (await Query.AddUser(body))
+            if (await userQuery.AddUser(body))
             {
                 return new OkResult();
             }
@@ -79,10 +81,10 @@ namespace HelprAPI.Controllers
             await Db.Connection.OpenAsync();
 
             //get user from database with given email
-            UserModel user = await Query.GetUserLogin(body.email.ToLower());
+            UserModel user = await userQuery.GetUserLogin(body.email.ToLower());
 
             //return 404 code if user is already logged in
-            if(await Query.UserLoggedIn(user.user_id))
+            if(await userQuery.UserLoggedIn(user.user_id))
             {
                 return new NotFoundObjectResult("User already logged in");
             }
@@ -95,14 +97,14 @@ namespace HelprAPI.Controllers
 
             //return 404 code if password is incorrect
             string password = Security.HashPassword(body.password, user.salt);
-            if(!await Query.FieldAlreadyExists(("password"), password))
+            if(!await userQuery.FieldAlreadyExists(("password"), password))
             {
                 return new NotFoundObjectResult("Password is incorrect");
             }
 
             //create login token and send the result to authorization_tokens in database
             string token = user.user_id.ToString() + RandomStringUtils.RandomStringUtils.RandomAlphanumeric(32);
-            if(await Query.AddAuthorizationToken(user.user_id, token))
+            if(await userQuery.AddAuthorizationToken(user.user_id, token))
             {
                 return new OkObjectResult(token);
             }
@@ -117,12 +119,44 @@ namespace HelprAPI.Controllers
             await Db.Connection.OpenAsync();
 
             //return 200 if user is successfully logged out
-            if (await Query.Logout(token))
+            if (await userQuery.Logout(token))
             {
                 return new OkResult();
             }
             
             return new NotFoundObjectResult("Unable to log user out");
+        }
+
+        //POST api/users/location
+        [HttpPost ("location")]
+        public async Task<IActionResult> PostLocation([FromBody] UserModel body, [FromHeader] string token)
+        {
+            await Db.Connection.OpenAsync();
+            
+            //return 404 code if latitude and longitude are not given
+            if(body.latitude == null || body.longitude == null)
+            {
+                return new NotFoundObjectResult("Invalid body");
+            }
+            if(body.GetGeoCoordinates() == null)
+            {
+                return new NotFoundObjectResult("Invalid coordinates");
+            }
+
+            var userToken = await authorizationQuery.GetTokenModel(token);
+            if(userToken != null)
+            {
+                body.user_id = userToken.user_id;
+                if(await userQuery.AddUserLocation(body))
+                {
+                    return new OkResult();
+                }
+                {
+                    return new NotFoundObjectResult("Server error");
+                }
+            }
+
+            return new NotFoundObjectResult("User must be logged in to set location");
         }
 
         //Private helper methods:
