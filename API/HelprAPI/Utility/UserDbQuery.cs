@@ -138,7 +138,7 @@ namespace HelprAPI
 
             using(var cmd = Db.Connection.CreateCommand())
             {
-                cmd.CommandText = "INSERT INTO location_info (user_id, latitude, longitude) " +
+                cmd.CommandText = "REPLACE INTO location_info (user_id, latitude, longitude) " +
                     "VALUES (@user_id, @latitude, @longitude)";
                 cmd.Parameters.AddWithValue("@user_id", user.user_id);
                 cmd.Parameters.AddWithValue("latitude", user.latitude);
@@ -261,7 +261,6 @@ namespace HelprAPI
                     }
                 }
             }
-
             //otherwise field is not taken
             return false;
         }

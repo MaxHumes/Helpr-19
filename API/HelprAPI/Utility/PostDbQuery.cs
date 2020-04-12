@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using System.Data.Common;
 using HelprAPI.Models;
-using MySql.Data.MySqlClient;
 using HelprAPI.Utility.PostComparers;
 
 namespace HelprAPI.Utility
@@ -72,7 +71,6 @@ namespace HelprAPI.Utility
                     //create SQL query to insert post into posts table without location
                     cmd.CommandText = "INSERT INTO posts (thread_id, user_id, name, description)" +
                         "VALUES (@thread_id, @user_id, @name, @description)";
-                    
                 }
                 else
                 {

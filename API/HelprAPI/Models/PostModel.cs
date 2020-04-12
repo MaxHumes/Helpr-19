@@ -31,7 +31,7 @@ namespace HelprAPI.Models
 
         public bool IsValidPost()
         {
-            if (!thread_id.HasValue || !user_id.HasValue || name == null || description == null)
+            if (!thread_id.HasValue || name == null || description == null)
             {
                 return false;
             }

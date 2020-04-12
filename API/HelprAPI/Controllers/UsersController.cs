@@ -1,9 +1,7 @@
-﻿using System;
-using System.Threading.Tasks;
+﻿using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using HelprAPI.Models;
 using HelprAPI.Utility;
-using RandomStringUtils;
 
 namespace HelprAPI.Controllers
 {
@@ -127,8 +125,8 @@ namespace HelprAPI.Controllers
             return new NotFoundObjectResult("Unable to log user out");
         }
 
-        //POST api/users/location
-        [HttpPost ("location")]
+        //POST api/users/add/location
+        [HttpPost ("add/location")]
         public async Task<IActionResult> PostLocation([FromBody] UserModel body, [FromHeader] string token)
         {
             await Db.Connection.OpenAsync();

@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using Microsoft.AspNetCore.Http;
+﻿using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using HelprAPI.Models;
 using HelprAPI.Utility;
@@ -18,12 +14,16 @@ namespace HelprAPI.Controllers
         private UserDbQuery userQuery;
         private PostDbQuery postQuery;
         private AuthorizationQuery authorizationQuery;
+        private ThreadDbQuery threadQuery;
+        private LocationQuery locationQuery;
         public PostsController(AppDb db)
         {
             Db = db;
             userQuery = new UserDbQuery(Db);
             postQuery = new PostDbQuery(Db);
             authorizationQuery = new AuthorizationQuery(Db);
+            threadQuery = new ThreadDbQuery(Db);
+            locationQuery = new LocationQuery(Db);
         }
 
 
@@ -68,18 +68,26 @@ namespace HelprAPI.Controllers
         [HttpPost("add/post")]
         public async Task<IActionResult> PostPost([FromBody] PostModel body, [FromHeader] string token)
         {
-            if(!body.IsValidPost())
+            await Db.Connection.OpenAsync();
+            if (!body.IsValidPost() || !await threadQuery.ThreadExists((int)body.thread_id))
             {
                 return new NotFoundObjectResult("Invalid body");
             }
-
-            await Db.Connection.OpenAsync();
 
             var tokenModel = await authorizationQuery.GetTokenModel(token);
             //check that user is logged in
             if (tokenModel != null)
             {
+                //set post's user_id and location if applicable
                 body.user_id = tokenModel.user_id;
+                var userLocation = await locationQuery.GetLocation((int)body.user_id);
+                if(userLocation != null)
+                {
+                    body.latitude = userLocation.latitude;
+                    body.longitude = userLocation.longitude;
+                }
+
+                //add post
                 if (await postQuery.AddPost(body))
                 {
                     return new OkResult();
